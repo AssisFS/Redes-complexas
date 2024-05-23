@@ -69,6 +69,17 @@ Em sequência, temos um cálculo feito para a densidade de probabilidade, utiliz
                 break
         return(K, PK)
 
+Assim, geramos o seguinte gráfico, que pode ser analisado após para compreender nossa rede.
+
+    def draw_probabxgrau(K,PK):
+        plt.loglog()
+        plt.scatter(K, PK, marker = "o")
+        plt.xlabel('log(K)')
+        plt.ylabel('log(P(k))')
+        plt.title('Distribuição de grau')
+        plt.grid(True)
+    plt.show()
+
 Para calcular o clustering local, foi modulado um modelo arcaico, uma função mais lenta, que viria a ser melhorada a seguir com uma arquitetura de código mais robusta. Essa função nos dá o clustering da rede partindo do cálculo local, assim como a função mais eficiente.
 
     def cal_clustering_local(B):
@@ -350,17 +361,10 @@ Portanto, agora que temos os valores de centralidade, podemos encontrar os ponto
         nx.draw_networkx(sub_r, with_labels = False, node_size = 40, pos = pos, node_color = "#FF5900")
         plt.show()
 
-def draw_network(B):
-    
-    pos = nx.spring_layout(B)
-    nx.draw(B, with_labels = False, font_color = "red", node_size = 20, pos = pos)
-    plt.show()
+Também podemos plotar o grafo que analisamos, pelo seguinte código:
 
-def draw_probabxgrau(K,PK):
-    plt.loglog()
-    plt.scatter(K, PK, marker = "o")
-    plt.xlabel('log(K)')
-    plt.ylabel('log(P(k))')
-    plt.title('Distribuição de grau')
-    plt.grid(True)
-    plt.show()
+    def draw_network(B):
+    
+        pos = nx.spring_layout(B)
+        nx.draw(B, with_labels = False, font_color = "red", node_size = 20, pos = pos)
+        plt.show()
