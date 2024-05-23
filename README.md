@@ -91,12 +91,6 @@ Para calcular o clustering local, foi modulado um modelo arcaico, uma função m
             e = 0
         return(Cl, Ci)
 
-Essa função ainda está incompleta, mas ela seria para o cálculo do clustering pelo método global. Ainda não tive tempo para resolver esse caso, mas espero terminar logo.
-
-    def cal_clustering_global(B):
-        for edge in B.edges():
-            print(edge)
-
 Agora, sim, utilizando o método aprimorado, com uma arquitetura de código mais robusta, esse código calcula mais rapidademente o clustering local. Utilizando já da função do mólulo networkx. Logo, temos uma nova função, mais eficiente que a anterior.
         
     def cal_clustering_local_networkx(B):
@@ -244,29 +238,117 @@ Como já dito, o código anterior era arcaico e lento. Por isso, foi aplicada um
                 Ct_r[i] = Ct[0]
         return(Ct_b, Ct_c, Ct_g, Ct_y, Ct_r)
 
-def draw_clusteringxgrau(K,Ci):
-    plt.scatter(K, Ci, marker = "o")
-    plt.xlabel('K')
-    plt.ylabel('CC')
-    plt.title('Coeficiente de agrupamento por grau')
-    plt.grid(True)
-    plt.show()
+Portanto, agora que temos os valores de centralidade, podemos encontrar os pontos mais centrais e fazermos um mapeamento no grafo.
 
-def draw_centralidade(B, pos_b, pos_c, pos_g, pos_y, pos_r):
-    pos = nx.spring_layout(B)
-    subset_b = B.subgraph(pos_b) 
-    subset_c = B.subgraph(pos_c)
-    subset_g = B.subgraph(pos_g)
-    subset_y = B.subgraph(pos_y)
-    subset_r = B.subgraph(pos_r)
-    print(subset_b,subset_c,subset_g,subset_y,subset_r)
-    plt.figure(figsize = (100,60))
-    nx.draw_networkx(subset_b, with_labels = True, node_size = 100, pos = pos, node_color = "#1770F1")
-    nx.draw_networkx(subset_c, with_labels = True, node_size = 100, pos = pos, node_color = "#38CFFF")
-    nx.draw_networkx(subset_g, with_labels = True, node_size = 100, pos = pos, node_color = "#35F53B")
-    nx.draw_networkx(subset_y, with_labels = True, node_size = 100, pos = pos, node_color = "#DEF200")
-    nx.draw_networkx(subset_r, with_labels = True, node_size = 100, pos = pos, node_color = "#FF5900")
-    plt.show()
+    def draw_centralidade(B, pos_b, pos_c, pos_g, pos_y, pos_r):
+        for t in range(len(B.nodes)-1,-1,-1):
+            if t < len(B.nodes):
+                if pos_b[t] == 0:
+                    pos_b = np.delete(pos_b, t)
+                if pos_c[t] == 0:
+                    pos_c = np.delete(pos_c, t)
+                if pos_g[t] == 0:
+                    pos_g = np.delete(pos_g, t)
+                if pos_y[t] == 0:
+                    pos_y = np.delete(pos_y, t)
+                if pos_r[t] == 0:
+                    pos_r = np.delete(pos_r, t)
+            else:
+                break
+    
+        pos_b = pos_b.tolist()
+        pos_c = pos_c.tolist()
+        pos_g = pos_g.tolist()
+        pos_y = pos_y.tolist()
+        pos_r = pos_r.tolist()
+    
+        for i in range(0,len(pos_b)):
+            pos_b[i] = int(pos_b[i])
+        for i in range(0,len(pos_c)):    
+            pos_c[i] = int(pos_c[i])
+        for i in range(0,len(pos_g)): 
+            pos_g[i] = int(pos_g[i])
+        for i in range(0,len(pos_y)): 
+            pos_y[i] = int(pos_y[i])
+        for i in range(0,len(pos_r)): 
+            pos_r[i] = int(pos_r[i])
+            
+        no = np.zeros(len(B.nodes))
+    
+        for node in B.nodes():
+            Vzn = list(B.neighbors(node))
+            node = int(node)
+            no[node] = node
+        
+        arquivo = open("grafo_b.txt", "w")
+    
+        for k in range(0,len(B.nodes)):
+            for i in range(0,len(pos_b)):
+                if pos_b[i] == no[k]:
+                    pos_b[i] = str(pos_b[i])
+                    for j in range(0,len(Vzn)):    
+                        arquivo.write("%s %s \n" %(pos_b[i],Vzn[j]))    
+        arquivo.close()
+    
+        arquivo = open("grafo_c.txt", "w")
+
+        for k in range(0,len(B.nodes)):
+            for i in range(0,len(pos_c)):
+                if pos_c[i] == no[k]:
+                    pos_c[i] = str(pos_c[i])
+                    for j in range(0,len(Vzn)):    
+                        arquivo.write("%s %s \n" %(pos_c[i],Vzn[j]))
+        arquivo.close()
+    
+        arquivo = open("grafo_g.txt", "w")
+    
+        for k in range(0,len(B.nodes)):
+            for i in range(0,len(pos_g)):
+                if pos_g[i] == no[k]:
+                    pos_g[i] = str(pos_g[i])
+                    for j in range(0,len(Vzn)):    
+                        arquivo.write("%s %s \n" %(pos_g[i],Vzn[j]))
+        arquivo.close()
+    
+        arquivo = open("grafo_y.txt", "w")
+    
+        for k in range(0,len(B.nodes)):
+            for i in range(0,len(pos_y)):
+                if pos_y[i] == no[k]:
+                    pos_y[i] = str(pos_y[i])
+                    for j in range(0,len(Vzn)):    
+                        arquivo.write("%s %s \n" %(pos_y[i],Vzn[j]))
+        arquivo.close()
+    
+        arquivo = open("grafo_r.txt", "w")
+    
+        for k in range(0,len(B.nodes)):
+            for i in range(0,len(pos_r)):
+                if pos_r[i] == no[k]:
+                    pos_r[i] = str(pos_r[i])
+                    for j in range(0,len(Vzn)):    
+                        arquivo.write("%s %s \n" %(pos_r[i],Vzn[j]))
+        arquivo.close()
+    
+        blue = nx.read_edgelist("grafo_b.txt")
+        cian = nx.read_edgelist("grafo_c.txt")
+        green = nx.read_edgelist("grafo_g.txt")
+        yellow = nx.read_edgelist("grafo_y.txt")
+        red = nx.read_edgelist("grafo_r.txt")
+        sub_b = B.subgraph(blue)
+        sub_c = B.subgraph(cian)
+        sub_g = B.subgraph(green)
+        sub_y = B.subgraph(yellow)
+        sub_r = B.subgraph(red)
+        pos = nx.spring_layout(B)
+        plt.figure(figsize = (10,6))
+        nx.draw_networkx(B, with_labels = False, font_color = "red", node_size = 20, pos = pos)
+        nx.draw_networkx(sub_b, with_labels = False, node_size = 40, pos = pos, node_color = "#1770F1")
+        nx.draw_networkx(sub_c, with_labels = False, node_size = 40, pos = pos, node_color = "#38CFFF")
+        nx.draw_networkx(sub_g, with_labels = False, node_size = 40, pos = pos, node_color = "#35F53B")
+        nx.draw_networkx(sub_y, with_labels = False, node_size = 40, pos = pos, node_color = "#DEF200")
+        nx.draw_networkx(sub_r, with_labels = False, node_size = 40, pos = pos, node_color = "#FF5900")
+        plt.show()
 
 def draw_network(B):
     
